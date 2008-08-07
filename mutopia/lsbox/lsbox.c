@@ -13,6 +13,7 @@
 #include "lsbox.h"
 #include "serial.h"
 
+static int adc_channel;
 
 void lsbox_ioport_init(void)
 {
@@ -34,6 +35,46 @@ void lsbox_ioport_init(void)
   /* Note the TE output isn't used yet, but allocating it is good */
   DDRD = (1 << RS485TRANSMIT);
   PORTD = 0xf8;     /* Set pullups on switch inputs */
+
+  /*
+   *    timer setup
+   * 
+   * base clock rate 7.3728 MHz
+   * prescaler 64 = 115.2 KHz
+   * OCR0 = 115
+   * CTC mode interrupts at 1002 Hz
+   */
+
+  /* set OSC0A to 115 */
+  OCR0 = 115;
+  
+  /* set TC into CTC mode */
+  TCCR0 = _BV(WGM01);
+  
+  /* enable output compare interrupt */
+  TIMSK = _BV(OCIE0);
+
+  /* set 64 prescalar */
+  TCCR0 = _BV(CS01) | _BV(CS00);
+
+  /*
+   *     ADC setup
+   *
+   * base clock rate 7.3728 MHz
+   * prescalar 64 = 115.2 KHz
+   * conversion time = 13 clocks ~= 8.862 KHz  ~= 113uS
+   */
+
+  /* select channel, AVCC reference */
+  adc_channel = 0;
+  ADMUX = _BV( REFS0 ) | adc_channel;
+  
+  /* enable, enable interrupts, prescalart=64 */
+  ADCSRA = _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1);
+
+  /* start conversion */
+  ADCSRA |= _BV(ADSC);
+  
 }
 
 
@@ -107,4 +148,25 @@ int read_joystick(int stick)
 int read_mist(void)
 {
   return (PIND & (1 << MIST));
+}
+
+ISR( TIMER0_COMP_vect )
+{
+
+}
+
+ISR( ADC_vect )
+{
+  uint16_t adc_val = ADC;
+  switch( adc_channel ) {
+    case 0:
+      adc_channel = 0;
+      break;
+  }
+
+  /* select channel */
+  ADMUX = _BV( REFS0 ) | adc_channel;
+  
+  /* start conversion */
+  ADCSRA |= _BV(ADSC);
 }
