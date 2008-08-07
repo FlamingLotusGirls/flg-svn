@@ -23,7 +23,7 @@ int         unit_address;
 tpacket     packet;
 int         received_char;
 
-long int    timer[6];
+unsigned int timer[6];
 
 
 void initialize(void)
@@ -53,42 +53,67 @@ void start_processing(void)
 }
 
 
-void service_timers(void)
+void turn_relay_on( int relay ) 
 {
+  /* send an on packet here */
+}
 
-  int i;
-
-  for (i = 0; i < 6; i++) {
-
-    /* Turn off relay if timer has reached 0 */
-    if (timer[i] <= 0)
-       PORTC &= ~(1 << i);
-
-    /* Count down */
-    if (timer[i] > 0)
-       timer[i]--;
-
-  }
-
+void turn_relay_off( int relay ) 
+{
+  /* send an off packet here */
 }
 
 
+/** handle a simple, direct relay to switch association
+ *  \param relay    relay number to handle
+ *  \param cur_val  current value of switch
+ *  \param old_val  last value of switch
+ *
+ *  Handles sending on and off packets for a direct mapping
+ *  between a swich and a relay.  Also handle retransmits
+ *  to keep ON relays from timeout at the receiver end.
+ */
+
+void handle_relay( int relay, int cur_val, int old_val )
+{
+  if( cur_val && (timer[relay] == 0) ) {
+    timer[relay] = RELAY_TIMEOUT;
+    turn_relay_on(relay);
+  } else if( !cur_val && old_val ) {
+    timer[relay] = 0;
+    turn_relay_off(relay);
+  }
+}
 
 int main(void)
 {
-   long int i = 0;
+   unsigned int cur_b;
+   unsigned int cur_c;
+   unsigned int cur_d;
 
-   initialize();
+   unsigned int old_b;
+   unsigned int old_c;
+   unsigned int old_d;
+
+   old_b = PORTB;
+   old_c = PORTC;
+   old_d = PORTD;
 
    while (1) {
+     
+     cur_b = PORTB;
+     cur_c = PORTC;
+     cur_d = PORTD;
 
-     for (i = 0; i < 2000000; i++);
+     handle_relay( 0, cur_b & POD1L, old_b & POD1L );
+     handle_relay( 1, cur_b & POD1R, old_b & POD1R );
+     handle_relay( 2, cur_b & POD1U, old_b & POD1U );
+     handle_relay( 3, cur_b & POD1D, old_b & POD1D );
 
-     send_test_packet();
-
-     for (i = 0; i < 2000000; i++);
-
-     send_test_packet();
+     
+     old_b = cur_b;
+     old_c = cur_c;
+     old_d = cur_d;
 
    }
 

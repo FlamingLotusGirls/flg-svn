@@ -13,7 +13,12 @@
 #include "lsbox.h"
 #include "serial.h"
 
+
 static int adc_channel;
+
+extern unsigned int timer[6];
+
+
 
 void lsbox_ioport_init(void)
 {
@@ -152,7 +157,12 @@ int read_mist(void)
 
 ISR( TIMER0_COMP_vect )
 {
-
+  int i;
+  for( i=0 ; i<(sizeof(timer)/sizeof(*timer)) ; i++ ) {
+    if( timer[i] ) {
+      timer[i]--;
+    }
+  }
 }
 
 ISR( ADC_vect )

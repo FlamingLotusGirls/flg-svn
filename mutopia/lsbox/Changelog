@@ -1,2 +1,5 @@
+2008-08-07 erik gilling <konkers@konkers.net>
+	* add skeleton handling for direct switch->relay
+	
 2008-08-06 erik gilling <konkers@konkers.net>
 	* add untested timer and adc code

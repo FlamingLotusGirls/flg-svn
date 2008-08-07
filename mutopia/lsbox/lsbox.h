@@ -16,8 +16,8 @@
 #define   RX_ADDRESS 0
 
 
-/* This about 24000 per second:  it's in units of "loop iterations"  */
-#define   RELAY_TIMEOUT   12000;
+/* 200ms */
+#define   RELAY_TIMEOUT   200
 
 /* Our port connections */
 
