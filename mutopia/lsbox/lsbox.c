@@ -18,6 +18,8 @@ static int adc_channel;
 
 extern unsigned int timer[6];
 
+uint16_t purge_adc_val;
+uint16_t dump_adc_val;
 
 
 void lsbox_ioport_init(void)
@@ -167,9 +169,14 @@ ISR( TIMER0_COMP_vect )
 
 ISR( ADC_vect )
 {
-  uint16_t adc_val = ADC;
   switch( adc_channel ) {
     case 0:
+      purge_adc_val = ADC;
+      adc_channel = 1;
+      break;
+
+    case 1:
+      dump_adc_val = ADC;
       adc_channel = 0;
       break;
   }

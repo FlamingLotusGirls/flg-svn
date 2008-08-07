@@ -7,6 +7,7 @@
 
 */
 
+#include <stdint.h>
 
 #define   F_CPU      7372800UL
 
@@ -63,6 +64,9 @@
 /* The switch is the upper 4 bits on port D */
 #define   MODE_SWITCH_MASK     0x0f
 #define   MODE_SWITCH_SHIFT    4
+
+extern uint16_t purge_adc_val;
+extern uint16_t dump_adc_val;
 
 void initialize_hw(void);
 
