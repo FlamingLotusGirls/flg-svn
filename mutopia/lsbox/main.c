@@ -85,6 +85,45 @@ void handle_relay( int relay, int cur_val, int old_val )
   }
 }
 
+
+/** handle fire button with fire and purge relays
+ *  \param fire_relay    relay which activates fire
+ *  \param purge_relay   relay which activates purge
+ *  \param cur_val       current value of fire button
+ *  \param old_val       last value of fire button
+ *
+ *  Handles a fire button.  When pressed activates fire_relay
+ *  and keeps active while pressed.  When released activates
+ *  purge relay for 0-255 ms as set by purge pot.
+ *
+ *  XXX-ewg: we probably want more than 255ms in which case we need
+ *           to keep acking the relay and keep a secondary counter.
+ */
+
+void handle_fire( int fire_relay, int purge_relay, int cur_val, int old_val )
+{
+  if( timer[purge_relay] ) {
+    /* on last ms turn off relay */
+    if( timer[purge_relay] == 1 ) {
+      timer[purge_relay] = 0;
+      turn_relay_off(purge_relay);
+    }
+  } else {
+    /* we want to make sure not to re-trigger while purging */
+    if( cur_val && (timer[fire_relay] == 0) ) {
+      timer[fire_relay] = RELAY_TIMEOUT;
+      turn_relay_on(fire_relay);
+    } else if( !cur_val && old_val ) {
+      timer[fire_relay] = 0;
+      turn_relay_off(fire_relay);
+
+      timer[purge_relay] = purge_adc_val >> 2;
+      turn_relay_on(purge_relay);
+    }
+  }
+
+}
+
 int main(void)
 {
    unsigned int cur_b;
@@ -109,6 +148,7 @@ int main(void)
      handle_relay( 1, cur_b & POD1R, old_b & POD1R );
      handle_relay( 2, cur_b & POD1U, old_b & POD1U );
      handle_relay( 3, cur_b & POD1D, old_b & POD1D );
+     handle_fire( 4, 5, cur_b & POD1FIRE, old_b & POD1FIRE );
 
      
      old_b = cur_b;

@@ -1,4 +1,7 @@
 2008-08-07 erik gilling <konkers@konkers.net>
+	* add fire button code.  see XXX-ewg caveat
+
+2008-08-07 erik gilling <konkers@konkers.net>
 	* read purge and dump pots into global vars
 	
 2008-08-07 erik gilling <konkers@konkers.net>
