@@ -9,6 +9,7 @@
 #include <avr/interrupt.h>
 #include "flg-packet.h"
 #include "lsbox.h"
+#include "serial.h"
 
 
 /* extern globals */
@@ -17,7 +18,7 @@ extern int packet_state;
 extern tpacket packet;
 extern int received_char;
 extern int unit_address;
-extern long int timer[];
+extern unsigned long int timer[];
 
 /*
    UART receive interrupt:  collect packet
@@ -136,6 +137,20 @@ int hex2int(char letter)
   return 999;         /* ha ha ha, this is bogus, but safe for this application */
 }
 
+char int2hex(int value)
+{
+  if (value < 0)
+    return('0');
+
+  if (value < 10)
+    return('0' + value);
+
+  if (value > 15)
+    return('F');
+
+  return('A' + (value - 10));
+}
+
 
 
 /*
@@ -211,3 +226,44 @@ void send_test_packet(void)
   uart_putchar('a');
 
 }
+
+
+tpacket form_command_packet(unit, addr, data)
+{
+  int unit1 = unit / 16;
+  int unit2 = unit % 16;
+
+  tpacket p;
+  clear_packet(&p);   
+
+  p.head = PACKET_CHAR_WRITE;
+
+  p.unit_number1 = int2hex(unit1);
+  p.unit_number2 = int2hex(unit2);
+
+  p.addr = '0' + addr;
+
+  p.data = '0' + data;
+
+  return(p);
+}
+
+
+
+void send_packet(tpacket p)
+{
+
+  //  uart_putchar(PACKET_CHAR_WRITE);
+  uart_putchar(p.head);
+
+  uart_putchar(p.unit_number1);
+  uart_putchar(p.unit_number2);
+
+  uart_putchar(p.addr);
+  uart_putchar(p.data);
+
+  uart_putchar(PACKET_CHAR_TAIL);
+  uart_putchar('\n');                 /* not sure if we want this */
+  uart_putchar('\r');
+}
+

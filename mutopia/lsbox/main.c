@@ -23,7 +23,7 @@ int         unit_address;
 tpacket     packet;
 int         received_char;
 
-unsigned int timer[6];
+unsigned long int timer[6];
 
 
 void initialize(void)
@@ -56,6 +56,9 @@ void start_processing(void)
 void turn_relay_on( int relay ) 
 {
   /* send an on packet here */
+
+
+
 }
 
 void turn_relay_off( int relay ) 
@@ -124,38 +127,120 @@ void handle_fire( int fire_relay, int purge_relay, int cur_val, int old_val )
 
 }
 
+
+void spew_mode(int mode)
+{
+   uart_putchar(int2hex(mode));
+   uart_putchar('\n');
+   uart_putchar('\r');
+}
+
+
+void say_hello(void)
+{
+   int i = 0;
+   long int j = 0;
+   char hello[] = "hello FLG\n\r";
+
+   for (i = 0; i < 11; i++)
+      uart_putchar(hello[i]);
+
+   for (j = 0; j < 2000000; j++);
+}
+
+void test_uart(void)
+{
+  int i = 0;
+  char hello[] = "a\n\r";
+
+  for (i = 0; i < 3; i++)
+    uart_putchar(hello[i]);
+}
+
+
+void test_uart_and_packet(void)
+{
+   uart_putchar('b');
+   uart_putchar('c');
+
+   tpacket p;
+   p = form_command_packet(1, 1, 1);
+   send_packet(p);
+}
+
+
+
+/* The following for handle_pod1() */
+
+unsigned int cur_b;
+unsigned int cur_c;
+unsigned int cur_d;
+
+unsigned int old_b;
+unsigned int old_c;
+unsigned int old_d;
+
+
+void handle_pod1(void)
+{
+  cur_b = PORTB;
+  cur_c = PORTC;
+  cur_d = PORTD;
+
+  handle_relay( 0, cur_b & POD1L, old_b & POD1L );
+  handle_relay( 1, cur_b & POD1R, old_b & POD1R );
+  handle_relay( 2, cur_b & POD1U, old_b & POD1U );
+  handle_relay( 3, cur_b & POD1D, old_b & POD1D );
+  handle_fire( 4, 5, cur_b & POD1FIRE, old_b & POD1FIRE );
+     
+  old_b = cur_b;
+  old_c = cur_c;
+  old_d = cur_d;
+}
+
+
 int main(void)
 {
-   unsigned int cur_b;
-   unsigned int cur_c;
-   unsigned int cur_d;
+   int mode = 0;
 
-   unsigned int old_b;
-   unsigned int old_c;
-   unsigned int old_d;
+
+   /* The following for handle_pod1() */
 
    old_b = PORTB;
    old_c = PORTC;
    old_d = PORTD;
 
-   while (1) {
-     
-     cur_b = PORTB;
-     cur_c = PORTC;
-     cur_d = PORTD;
+   /* End state variables for handle_pod1() */
 
-     handle_relay( 0, cur_b & POD1L, old_b & POD1L );
-     handle_relay( 1, cur_b & POD1R, old_b & POD1R );
-     handle_relay( 2, cur_b & POD1U, old_b & POD1U );
-     handle_relay( 3, cur_b & POD1D, old_b & POD1D );
-     handle_fire( 4, 5, cur_b & POD1FIRE, old_b & POD1FIRE );
 
-     
-     old_b = cur_b;
-     old_c = cur_c;
-     old_d = cur_d;
+   initialize();
 
+   while(1) 
+   {
+      mode = read_mode_switch();
+
+      spew_mode(mode);
+      
+      switch(mode) {
+
+         case 0:
+           test_uart();
+           break;
+
+         case 1:
+           test_uart_and_packet();
+           break;
+
+         case 2:
+           handle_pod1();
+          break;
+
+         default:
+           say_hello();
+           break;
+      }
    }
 
    return 0;
 }
+
