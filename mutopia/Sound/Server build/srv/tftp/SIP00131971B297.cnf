@@ -1,0 +1,27 @@
+image_version: P0S3-08-3-00
+
+#
+# Sip Config for Extension: 2
+#
+
+ # Line 1 Setup
+line1_name: "Pod 2"
+line1_authname: "pod2"
+line1_shortname: "2"
+line1_password: "mutopia"
+line1_displayname: "Mutopian pod 2";
+
+ # Line 2 Setup
+line2_name: "Pod 2"
+line2_authname: "pod2"
+line2_shortname: "2"
+line2_password: "mutopia"
+line1_displayname: "Mutopian pod 2";
+
+# Phone Password (Password to be used for console or telnet login)
+phone_password: "cisco" ; Limited to 31 characters (Default - cisco)
+
+# User classifcation used when Registering [ none(default), phone, ip ]
+user_info: none
+
+telnet_level: 2

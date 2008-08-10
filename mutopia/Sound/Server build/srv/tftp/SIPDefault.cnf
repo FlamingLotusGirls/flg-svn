@@ -1,0 +1,17 @@
+proxy1_address: 10.1.1.1        ; Can be dotted IP or FQDN
+proxy2_address: ""              ; Can be dotted IP or FQDN
+proxy3_address: ""              ; Can be dotted IP or FQDN
+proxy4_address: ""              ; Can be dotted IP or FQDN
+proxy5_address: ""              ; Can be dotted IP or FQDN
+proxy6_address: ""              ; Can be dotted IP or FQDN
+
+proxy_register: 1
+
+messages_uri:   "500"
+
+phone_password: "cisco" ; Limited to 31 characters (Default - cisco)
+
+sntp_server:    10.1.1.1
+time_zone:      PST
+
+dial_template: DIALPLAN
