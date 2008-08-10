@@ -1,3 +1,6 @@
+2008-08-10 Tad Rollow <tad@spaceship.com>
+	* add packet and uart test code, mode switch
+
 2008-08-07 erik gilling <konkers@konkers.net>
 	* add fire button code.  see XXX-ewg caveat
 
