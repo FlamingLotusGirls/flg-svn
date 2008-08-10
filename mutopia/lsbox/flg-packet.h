@@ -38,9 +38,14 @@ typedef struct
 } tpacket;
 
 
+int hex2int(char letter);
 
+char int2hex(int value);
 
 void parse_packet(tpacket p);
 
-
 void clear_packet(tpacket *p);
+
+tpacket form_command_packet(int unit, int addr, int data);
+
+void send_packet(tpacket p);
