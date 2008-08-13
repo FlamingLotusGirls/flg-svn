@@ -1,3 +1,9 @@
+2008-08-13 erik gilling <konkers@konkers.net>
+	* fix POT direction
+	
+2008-08-13 erik gilling <konkers@konkers.net>
+	* joystick axis work
+	
 2008-08-12 erik gilling <konkers@konkers.net>
 	* further packet refactoring
 	* remove packet rx code

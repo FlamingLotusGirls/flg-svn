@@ -249,6 +249,11 @@ int main(void)
    {
      timeout_relays();
      mode = 2;//read_mode_switch();
+     uart_putchar(int2hex((purge_adc_val>> 8)&0xf));
+     uart_putchar(int2hex((purge_adc_val>> 4)&0xf));
+     uart_putchar(int2hex(purge_adc_val & 0xf));
+   uart_putchar('\n');
+   uart_putchar('\r');
 
       //spew_mode(mode);
       

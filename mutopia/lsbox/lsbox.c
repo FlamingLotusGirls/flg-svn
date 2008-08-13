@@ -64,6 +64,7 @@ void lsbox_ioport_init(void)
 
   /* set 64 prescalar */
   TCCR0 = _BV(CS01) | _BV(CS00);
+  
 
   /*
    *     ADC setup
@@ -183,7 +184,7 @@ ISR( ADC_vect )
 {
   switch( adc_channel ) {
     case 0:
-      purge_adc_val = ADC;
+      purge_adc_val = 0x3ff - ADC;
       adc_channel = 1;
       break;
 
