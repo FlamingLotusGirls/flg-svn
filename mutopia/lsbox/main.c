@@ -37,23 +37,13 @@ void initialize(void)
 
 }
 
-void send_on_packet( int relay ) 
-{
-  packet_send_write( relay, 1 );
-}
-
-void send_off_packet( int relay ) 
-{
-  packet_send_write( relay, 0 );
-}
-
 void timeout_relays( void )
 {
   int i;
   for( i=0 ; i<(sizeof(relay_timers)/sizeof(*relay_timers)) ; i++ ) {
     if( relay_timers[i] == 1) {
       relay_timers[i] = RELAY_TIMEOUT;
-      send_on_packet( i );
+      packet_send_write( i, 1 );
     }
   }
 }
@@ -62,7 +52,7 @@ void relay_on( int relay )
 {
   if( relay_timers[relay] == 0 ) {
     relay_timers[relay] = RELAY_TIMEOUT;
-    send_on_packet( relay );
+    packet_send_write( relay, 1 );
   }
 }
 
@@ -70,7 +60,7 @@ void relay_off( int relay )
 {
   if( relay_timers[relay] != 0 ) {
     relay_timers[relay] = 0;
-    send_off_packet( relay );
+    packet_send_write( relay, 0 );
   }
 }
 
@@ -98,6 +88,7 @@ void handle_relay( int relay, int cur_val, int old_val )
 /** handle fire button with fire and purge relays
  *  \param fire_relay    relay which activates fire
  *  \param purge_relay   relay which activates purge
+ *  \param purge_timer   purge timer to use
  *  \param cur_val       current value of fire button
  *  \param old_val       last value of fire button
  *
@@ -109,29 +100,22 @@ void handle_relay( int relay, int cur_val, int old_val )
  *           to keep acking the relay and keep a secondary counter.
  */
 
-void handle_fire( int fire_relay, int purge_relay, int cur_val, int old_val )
+void handle_fire( int fire_relay, int purge_relay, int purge_timer,
+		  int cur_val, int old_val )
 {
-#if 0
-  if( relay_timers[purge_relay] ) {
-    /* on last ms turn off relay */
-    if( relay_timers[purge_relay] == 1 ) {
-      relay_timers[purge_relay] = 0;
-      turn_relay_off(purge_relay);
-    }
-  } else {
-    /* we want to make sure not to re-trigger while purging */
-    if( cur_val && (relay_timers[fire_relay] == 0) ) {
-      relay_timers[fire_relay] = RELAY_TIMEOUT;
-      turn_relay_on(fire_relay);
+  /* we want to make sure not to re-trigger while purging */
+  if( purge_timers[purge_timer] == 0 ) {
+    if( cur_val ) {
+      relay_on( fire_relay );
     } else if( !cur_val && old_val ) {
-      relay_timers[fire_relay] = 0;
-      turn_relay_off(fire_relay);
-
-      relay_timers[purge_relay] = purge_adc_val >> 2;
-      turn_relay_on(purge_relay);
+      relay_off( fire_relay );
+      purge_timers[purge_timer] = purge_adc_val >> 2;
+      relay_on( purge_relay );
     }
+  } else if( purge_timers[purge_timer] == 1 ) {
+    purge_timers[purge_timer] = 0;
+    relay_off(purge_relay);
   }
-#endif
 }
 
 void handle_axis( int enable_relay, int dir_relay, 
@@ -211,19 +195,24 @@ void handle_pods(void)
   cur_c = ~PINC;
   cur_d = ~PIND;
 
-/*   handle_axis( 0, 1, cur_b & POD1L, old_b & POD1L, */
-/* 	       cur_b & POD1R, old_b & POD1R ); */
-/*   handle_axis( 2, 3, cur_b & POD1U, old_b & POD1U, */
-/* 	       cur_b & POD1D, old_b & POD1D ); */
-/*   handle_fire( 4, 5, cur_b & POD1FIRE, old_b & POD1FIRE ); */
+  //  handle_axis( 0, 1, 
+  //	       cur_b & POD1L, old_b & POD1L,
+  //	       cur_b & POD1R, old_b & POD1R );
+  //  handle_axis( 2, 3, 
+  //	       cur_b & POD1U, old_b & POD1U,
+  //	       cur_b & POD1D, old_b & POD1D );
+  //  handle_fire( 4, 5, 0,
+  //	       cur_b & POD1FIRE, old_b & POD1FIRE );
+
      
   handle_axis( 0, 1, cur_c & _BV(POD3L), old_c & _BV(POD3L),
 	       cur_c & _BV(POD3R), old_c & _BV(POD3R) );
   handle_axis( 2, 3, cur_c & _BV(POD3U), old_c & _BV(POD3U),
 	       cur_c & _BV(POD3D), old_c & _BV(POD3D) );
-  handle_fire( 4, 5, cur_c & _BV(POD3FIRE), old_c & _BV(POD3FIRE) ); 
+  handle_fire( 4, 5, 0,
+	       cur_b & _BV(POD3FIRE), old_b & _BV(POD1FIRE) );
 
- old_b = cur_b;
+  old_b = cur_b;
   old_c = cur_c;
   old_d = cur_d;
 }
@@ -249,11 +238,6 @@ int main(void)
    {
      timeout_relays();
      mode = 2;//read_mode_switch();
-     uart_putchar(int2hex((purge_adc_val>> 8)&0xf));
-     uart_putchar(int2hex((purge_adc_val>> 4)&0xf));
-     uart_putchar(int2hex(purge_adc_val & 0xf));
-   uart_putchar('\n');
-   uart_putchar('\r');
 
       //spew_mode(mode);
       
