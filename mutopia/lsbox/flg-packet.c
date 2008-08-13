@@ -41,16 +41,13 @@ int hex2int(char letter)
 
 char int2hex(int value)
 {
-  if (value < 0)
-    return('0');
-
-  if (value < 10)
-    return('0' + value);
-
-  if (value > 15)
-    return('F');
-
-  return('A' + (value - 10));
+  value &= 0xf;
+  
+  if( value < 10 ) {
+    return '0' + value;
+  } else {
+    return 'A' + value - 10;
+  }
 }
 
 void packet_send_test( void )
@@ -64,15 +61,15 @@ void packet_send_test( void )
 
 void packet_form_cmd( tpacket *p, uint8_t cmd, int relay, int data )
 {
-  uint8_t unit = pgm_read_word( relay*2 );
-  uint8_t addr = pgm_read_word( relay*2+1 );
+  uint8_t unit = pgm_read_word( relay_data + relay*2 );
+  uint8_t addr = pgm_read_word( relay_data + relay*2+1 );
 
   p->head = cmd;
 
   p->unit_number1 = int2hex(unit>>4);
   p->unit_number2 = int2hex(unit&0xf);
 
-  p->addr = '0' + addr;
+  p->addr = '0' + relay;
 
   p->data = '0' + data;
 }
@@ -92,8 +89,8 @@ void packet_send( tpacket *p )
   uart_putchar(p->data);
 
   uart_putchar(PACKET_CHAR_TAIL);
-  //  uart_putchar('\n');                 /* not sure if we want this */
-  //  uart_putchar('\r');
+  uart_putchar('\n');                 /* not sure if we want this */
+  uart_putchar('\r');
 }
 
 void packet_send_write( int relay, int data )

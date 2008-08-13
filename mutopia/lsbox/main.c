@@ -32,6 +32,9 @@ void initialize(void)
      relay_timers[i] = 0;
    for (i = 0; i < (sizeof(purge_timers)/sizeof(*purge_timers)); i++)
      purge_timers[i] = 0;
+
+   sei();
+
 }
 
 void send_on_packet( int relay ) 
@@ -57,14 +60,18 @@ void timeout_relays( void )
 
 void relay_on( int relay )
 {
-  relay_timers[relay] = RELAY_TIMEOUT;
-  send_on_packet( relay );
+  if( relay_timers[relay] == 0 ) {
+    relay_timers[relay] = RELAY_TIMEOUT;
+    send_on_packet( relay );
+  }
 }
 
 void relay_off( int relay )
 {
-  relay_timers[relay] = 0;
-  send_off_packet( relay );
+  if( relay_timers[relay] != 0 ) {
+    relay_timers[relay] = 0;
+    send_off_packet( relay );
+  }
 }
 
 
@@ -148,7 +155,8 @@ void handle_axis( int enable_relay, int dir_relay,
 
 void spew_mode(int mode)
 {
-   uart_putchar(int2hex(mode));
+   uart_putchar(int2hex(PINC >> 4));
+   uart_putchar(int2hex(PINC & 0xf));
    uart_putchar('\n');
    uart_putchar('\r');
 }
@@ -197,19 +205,25 @@ unsigned int old_c;
 unsigned int old_d;
 
 
-void handle_pod1(void)
+void handle_pods(void)
 {
-  cur_b = PORTB;
-  cur_c = PORTC;
-  cur_d = PORTD;
+  cur_b = ~PINB;
+  cur_c = ~PINC;
+  cur_d = ~PIND;
 
-  handle_axis( 0, 1, cur_b & POD1L, old_b & POD1L,
-	       cur_b & POD1R, old_b & POD1R );
-  handle_axis( 2, 3, cur_b & POD1U, old_b & POD1U,
-	       cur_b & POD1D, old_b & POD1D );
-  handle_fire( 4, 5, cur_b & POD1FIRE, old_b & POD1FIRE );
+/*   handle_axis( 0, 1, cur_b & POD1L, old_b & POD1L, */
+/* 	       cur_b & POD1R, old_b & POD1R ); */
+/*   handle_axis( 2, 3, cur_b & POD1U, old_b & POD1U, */
+/* 	       cur_b & POD1D, old_b & POD1D ); */
+/*   handle_fire( 4, 5, cur_b & POD1FIRE, old_b & POD1FIRE ); */
      
-  old_b = cur_b;
+  handle_axis( 0, 1, cur_c & _BV(POD3L), old_c & _BV(POD3L),
+	       cur_c & _BV(POD3R), old_c & _BV(POD3R) );
+  handle_axis( 2, 3, cur_c & _BV(POD3U), old_c & _BV(POD3U),
+	       cur_c & _BV(POD3D), old_c & _BV(POD3D) );
+  handle_fire( 4, 5, cur_c & _BV(POD3FIRE), old_c & _BV(POD3FIRE) ); 
+
+ old_b = cur_b;
   old_c = cur_c;
   old_d = cur_d;
 }
@@ -222,9 +236,9 @@ int main(void)
 
    /* The following for handle_pod1() */
 
-   old_b = PORTB;
-   old_c = PORTC;
-   old_d = PORTD;
+   old_b = ~PINB;
+   old_c = ~PINC;
+   old_d = ~PIND;
 
    /* End state variables for handle_pod1() */
 
@@ -234,9 +248,9 @@ int main(void)
    while(1) 
    {
      timeout_relays();
-      mode = read_mode_switch();
+     mode = 2;//read_mode_switch();
 
-      spew_mode(mode);
+      //spew_mode(mode);
       
       switch(mode) {
 
@@ -249,7 +263,7 @@ int main(void)
            break;
 
          case 2:
-           handle_pod1();
+           handle_pods();
           break;
 
          default:

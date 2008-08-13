@@ -145,7 +145,11 @@ gccversion :
 
 
 program : $(TARGET).hex
-	$(DIRAVRBIN)/avrdude.exe -e -c stk500v2 -p $(AVRDUDEPART) -F -U flash:w:$(TARGET).hex
+	$(DIRAVRBIN)/avrdude.exe -e -c stk-500 -p $(AVRDUDEPART) -F -U flash:w:$(TARGET).hex -U lfuse:w:0xef:m -U hfuse:w:0xd9:m
+
+flash: $(TARGET).hex
+	avrdude.exe -e -c fg -p $(AVRDUDEPART) -F -U flash:w:$(TARGET).hex -U lfuse:w:0xef:m -U hfuse:w:0xd9:m
+
 
 # Target: Convert ELF to COFF for use in debugging / simulating in AVR Studio.
 coff: $(TARGET).cof end
