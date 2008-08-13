@@ -1,3 +1,8 @@
+2008-08-12 erik gilling <konkers@konkers.net>
+	* add relay_map
+	* refactor relay handling
+	* refactor packet handling
+	
 2008-08-10 Tad Rollow <tad@spaceship.com>
 	* add packet and uart test code, mode switch
 

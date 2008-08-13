@@ -15,12 +15,13 @@
 
 
 static int adc_channel;
+static unsigned int ticks;
 
-extern unsigned int timer[6];
+extern unsigned int relay_timers[6];
+extern unsigned int purge_timers[3];
 
 uint16_t purge_adc_val;
 uint16_t dump_adc_val;
-
 
 void lsbox_ioport_init(void)
 {
@@ -44,7 +45,7 @@ void lsbox_ioport_init(void)
   PORTD = 0xf8;     /* Set pullups on switch inputs */
 
   /*
-   *    timer setup
+   *    relay_timers setup
    * 
    * base clock rate 7.3728 MHz
    * prescaler 64 = 115.2 KHz
@@ -160,9 +161,20 @@ int read_mist(void)
 ISR( TIMER0_COMP_vect )
 {
   int i;
-  for( i=0 ; i<(sizeof(timer)/sizeof(*timer)) ; i++ ) {
-    if( timer[i] ) {
-      timer[i]--;
+
+  ticks++;
+
+  if( (ticks & 0x3f) == 0 ) {
+    for( i=0 ; i<(sizeof(purge_timers)/sizeof(*purge_timers)) ; i++ ) {
+      if( purge_timers[i] > 1 ) {
+	purge_timers[i]--;
+      }
+    } 
+  }
+  
+  for( i=0 ; i<(sizeof(relay_timers)/sizeof(*relay_timers)) ; i++ ) {
+    if( relay_timers[i] > 1 ) {
+      relay_timers[i]--;
     }
   }
 }

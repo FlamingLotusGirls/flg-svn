@@ -10,10 +10,12 @@
 
 #include <avr/interrupt.h>
 
+#include <avr/pgmspace.h>
+
 #include "lsbox.h"
 #include "serial.h"
 #include "flg-packet.h"
-
+#include "relay_map.h"
 
 
 /* Global variables */
@@ -23,8 +25,8 @@ int         unit_address;
 tpacket     packet;
 int         received_char;
 
-unsigned long int timer[6];
-
+unsigned int relay_timers[6];
+unsigned int purge_timers[3];
 
 void initialize(void)
 {
@@ -41,8 +43,10 @@ void initialize(void)
 
    received_char = 0;
 
-   for (i = 0; i < 6; i++)
-     timer[i] = 0;
+   for (i = 0; i < (sizeof(relay_timers)/sizeof(*relay_timers)); i++)
+     relay_timers[i] = 0;
+   for (i = 0; i < (sizeof(purge_timers)/sizeof(*purge_timers)); i++)
+     purge_timers[i] = 0;
 }
 
 
@@ -52,18 +56,44 @@ void start_processing(void)
    enable_serial_interrupts();
 }
 
-
-void turn_relay_on( int relay ) 
+void address_packet( int relay, tpacket *p ) 
 {
-  /* send an on packet here */
-
-
 
 }
 
-void turn_relay_off( int relay ) 
+void send_on_packet( int relay ) 
 {
-  /* send an off packet here */
+  form_command_packet(&packet, relay, 1 );
+  send_packet( &packet );
+}
+
+void send_off_packet( int relay ) 
+{
+  form_command_packet(&packet, relay, 0 );
+  send_packet( &packet );
+}
+
+void timeout_relays( void )
+{
+  int i;
+  for( i=0 ; i<(sizeof(relay_timers)/sizeof(*relay_timers)) ; i++ ) {
+    if( relay_timers[i] == 1) {
+      relay_timers[i] = RELAY_TIMEOUT;
+      send_on_packet( i );
+    }
+  }
+}
+
+void relay_on( int relay )
+{
+  relay_timers[relay] = RELAY_TIMEOUT;
+  send_on_packet( relay );
+}
+
+void relay_off( int relay )
+{
+  relay_timers[relay] = 0;
+  send_off_packet( relay );
 }
 
 
@@ -79,12 +109,10 @@ void turn_relay_off( int relay )
 
 void handle_relay( int relay, int cur_val, int old_val )
 {
-  if( cur_val && (timer[relay] == 0) ) {
-    timer[relay] = RELAY_TIMEOUT;
-    turn_relay_on(relay);
+  if( cur_val && (relay_timers[relay] == 0) ) {
+    relay_on(relay);
   } else if( !cur_val && old_val ) {
-    timer[relay] = 0;
-    turn_relay_off(relay);
+    relay_off(relay);
   }
 }
 
@@ -105,26 +133,45 @@ void handle_relay( int relay, int cur_val, int old_val )
 
 void handle_fire( int fire_relay, int purge_relay, int cur_val, int old_val )
 {
-  if( timer[purge_relay] ) {
+#if 0
+  if( relay_timers[purge_relay] ) {
     /* on last ms turn off relay */
-    if( timer[purge_relay] == 1 ) {
-      timer[purge_relay] = 0;
+    if( relay_timers[purge_relay] == 1 ) {
+      relay_timers[purge_relay] = 0;
       turn_relay_off(purge_relay);
     }
   } else {
     /* we want to make sure not to re-trigger while purging */
-    if( cur_val && (timer[fire_relay] == 0) ) {
-      timer[fire_relay] = RELAY_TIMEOUT;
+    if( cur_val && (relay_timers[fire_relay] == 0) ) {
+      relay_timers[fire_relay] = RELAY_TIMEOUT;
       turn_relay_on(fire_relay);
     } else if( !cur_val && old_val ) {
-      timer[fire_relay] = 0;
+      relay_timers[fire_relay] = 0;
       turn_relay_off(fire_relay);
 
-      timer[purge_relay] = purge_adc_val >> 2;
+      relay_timers[purge_relay] = purge_adc_val >> 2;
       turn_relay_on(purge_relay);
     }
   }
+#endif
+}
 
+void handle_axis( int enable_relay, int dir_relay, 
+		  int cur_pos_val, int old_pos_val,
+		  int cur_neg_val, int old_neg_val )
+{
+  if( cur_pos_val ) {
+    relay_on( enable_relay );
+    relay_on( dir_relay );
+  } else if( cur_neg_val ) {
+    relay_on( enable_relay );
+    relay_off( dir_relay );
+  } else if( (!cur_pos_val && old_pos_val) ||
+	     (!cur_neg_val && old_neg_val) ) {
+    relay_off( enable_relay );
+    relay_off( dir_relay );
+  }
+	     
 }
 
 
@@ -163,9 +210,8 @@ void test_uart_and_packet(void)
    uart_putchar('b');
    uart_putchar('c');
 
-   tpacket p;
-   p = form_command_packet(1, 1, 1);
-   send_packet(p);
+   form_command_packet(&packet, 1, 1 );
+   send_packet(&packet);
 }
 
 
@@ -187,10 +233,10 @@ void handle_pod1(void)
   cur_c = PORTC;
   cur_d = PORTD;
 
-  handle_relay( 0, cur_b & POD1L, old_b & POD1L );
-  handle_relay( 1, cur_b & POD1R, old_b & POD1R );
-  handle_relay( 2, cur_b & POD1U, old_b & POD1U );
-  handle_relay( 3, cur_b & POD1D, old_b & POD1D );
+  handle_axis( 0, 1, cur_b & POD1L, old_b & POD1L,
+	       cur_b & POD1R, old_b & POD1R );
+  handle_axis( 2, 3, cur_b & POD1U, old_b & POD1U,
+	       cur_b & POD1D, old_b & POD1D );
   handle_fire( 4, 5, cur_b & POD1FIRE, old_b & POD1FIRE );
      
   old_b = cur_b;
@@ -217,6 +263,7 @@ int main(void)
 
    while(1) 
    {
+     timeout_relays();
       mode = read_mode_switch();
 
       spew_mode(mode);

@@ -10,6 +10,7 @@
 #include "flg-packet.h"
 #include "lsbox.h"
 #include "serial.h"
+#include "relay_map.h"
 
 
 /* extern globals */
@@ -228,42 +229,37 @@ void send_test_packet(void)
 }
 
 
-tpacket form_command_packet(unit, addr, data)
+void form_command_packet(tpacket *p, int relay, int data )
 {
-  int unit1 = unit / 16;
-  int unit2 = unit % 16;
+  uint8_t unit = pgm_read_word( relay*2 );
+  uint8_t addr = pgm_read_word( relay*2+1 );
 
-  tpacket p;
-  clear_packet(&p);   
+  p->head = PACKET_CHAR_WRITE;
 
-  p.head = PACKET_CHAR_WRITE;
+  p->unit_number1 = int2hex(unit>>4);
+  p->unit_number2 = int2hex(unit&0xf);
 
-  p.unit_number1 = int2hex(unit1);
-  p.unit_number2 = int2hex(unit2);
+  p->addr = '0' + addr;
 
-  p.addr = '0' + addr;
-
-  p.data = '0' + data;
-
-  return(p);
+  p->data = '0' + data;
 }
 
 
 
-void send_packet(tpacket p)
+void send_packet(tpacket *p)
 {
 
   //  uart_putchar(PACKET_CHAR_WRITE);
-  uart_putchar(p.head);
+  uart_putchar(p->head);
 
-  uart_putchar(p.unit_number1);
-  uart_putchar(p.unit_number2);
+  uart_putchar(p->unit_number1);
+  uart_putchar(p->unit_number2);
 
-  uart_putchar(p.addr);
-  uart_putchar(p.data);
+  uart_putchar(p->addr);
+  uart_putchar(p->data);
 
   uart_putchar(PACKET_CHAR_TAIL);
-  uart_putchar('\n');                 /* not sure if we want this */
-  uart_putchar('\r');
+  //  uart_putchar('\n');                 /* not sure if we want this */
+  //  uart_putchar('\r');
 }
 

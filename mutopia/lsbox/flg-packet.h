@@ -46,6 +46,6 @@ void parse_packet(tpacket p);
 
 void clear_packet(tpacket *p);
 
-tpacket form_command_packet(int unit, int addr, int data);
+void form_command_packet(tpacket *p, int relay, int data );
 
-void send_packet(tpacket p);
+void send_packet(tpacket *p);

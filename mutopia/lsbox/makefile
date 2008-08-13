@@ -32,7 +32,7 @@ OPT = s
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c serial.c flg-packet.c lsbox.c
+SRC = $(TARGET).c serial.c flg-packet.c lsbox.c relay_map.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
