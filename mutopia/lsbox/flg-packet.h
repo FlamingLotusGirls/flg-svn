@@ -42,10 +42,7 @@ int hex2int(char letter);
 
 char int2hex(int value);
 
-void parse_packet(tpacket p);
-
-void clear_packet(tpacket *p);
-
-void form_command_packet(tpacket *p, int relay, int data );
-
-void send_packet(tpacket *p);
+void packet_form_cmd( tpacket *p, uint8_t cmd, int relay, int data );
+void packet_send( tpacket *p );
+void packet_send_write( int relay, int data );
+void packet_send_test( void );

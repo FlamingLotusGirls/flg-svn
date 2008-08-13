@@ -18,13 +18,6 @@
 #include "relay_map.h"
 
 
-/* Global variables */
-int         packet_available;
-int         packet_state;
-int         unit_address;
-tpacket     packet;
-int         received_char;
-
 unsigned int relay_timers[6];
 unsigned int purge_timers[3];
 
@@ -34,14 +27,6 @@ void initialize(void)
 
    initialize_hw();
 
-   unit_address = read_my_address();
-
-   packet_available = 0;
-   packet_state = PACKET_STATE_IDLE;
-
-   clear_packet(&packet);
-
-   received_char = 0;
 
    for (i = 0; i < (sizeof(relay_timers)/sizeof(*relay_timers)); i++)
      relay_timers[i] = 0;
@@ -49,28 +34,14 @@ void initialize(void)
      purge_timers[i] = 0;
 }
 
-
-
-void start_processing(void)
-{
-   enable_serial_interrupts();
-}
-
-void address_packet( int relay, tpacket *p ) 
-{
-
-}
-
 void send_on_packet( int relay ) 
 {
-  form_command_packet(&packet, relay, 1 );
-  send_packet( &packet );
+  packet_send_write( relay, 1 );
 }
 
 void send_off_packet( int relay ) 
 {
-  form_command_packet(&packet, relay, 0 );
-  send_packet( &packet );
+  packet_send_write( relay, 0 );
 }
 
 void timeout_relays( void )
@@ -210,8 +181,7 @@ void test_uart_and_packet(void)
    uart_putchar('b');
    uart_putchar('c');
 
-   form_command_packet(&packet, 1, 1 );
-   send_packet(&packet);
+   packet_send_write( 1, 1 );
 }
 
 

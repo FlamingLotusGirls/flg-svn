@@ -1,4 +1,8 @@
 2008-08-12 erik gilling <konkers@konkers.net>
+	* further packet refactoring
+	* remove packet rx code
+	
+2008-08-12 erik gilling <konkers@konkers.net>
 	* add relay_map
 	* refactor relay handling
 	* refactor packet handling
