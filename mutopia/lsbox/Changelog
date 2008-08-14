@@ -1,4 +1,10 @@
 2008-08-13 erik gilling <konkers@konkers.net>
+	* set purge time min to 2
+	* comment out pods 1 and 2 for now
+	* fix timer to go off at 1KHz
+	* fix packet_form_cmd to use addr instead of relay
+	
+2008-08-13 erik gilling <konkers@konkers.net>
 	* flesh out all three joysticks
 	
 2008-08-13 erik gilling <konkers@konkers.net>

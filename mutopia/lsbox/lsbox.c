@@ -12,13 +12,14 @@
 
 #include "lsbox.h"
 #include "serial.h"
+#include "relay_map.h"
 
 
 static int adc_channel;
 static unsigned int ticks;
 
 extern unsigned int relay_timers[NUM_RELAYS];
-extern unsigned int purge_timers[3];
+extern unsigned int purge_timers[4];
 
 uint16_t purge_adc_val;
 uint16_t dump_adc_val;
@@ -56,14 +57,11 @@ void lsbox_ioport_init(void)
   /* set OSC0A to 115 */
   OCR0 = 115;
   
-  /* set TC into CTC mode */
-  TCCR0 = _BV(WGM01);
-  
   /* enable output compare interrupt */
   TIMSK = _BV(OCIE0);
 
-  /* set 64 prescalar */
-  TCCR0 = _BV(CS01) | _BV(CS00);
+  /* set 64 prescalar, CTC mode */
+  TCCR0 = _BV(CS01) | _BV(CS00) | _BV(WGM01);;
   
 
   /*
@@ -83,7 +81,7 @@ void lsbox_ioport_init(void)
 
   /* start conversion */
   ADCSRA |= _BV(ADSC);
-  
+
 }
 
 

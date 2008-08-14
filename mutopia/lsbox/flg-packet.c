@@ -69,7 +69,7 @@ void packet_form_cmd( tpacket *p, uint8_t cmd, int relay, int data )
   p->unit_number1 = int2hex(unit>>4);
   p->unit_number2 = int2hex(unit&0xf);
 
-  p->addr = '0' + relay;
+  p->addr = '0' + addr;
 
   p->data = '0' + data;
 }

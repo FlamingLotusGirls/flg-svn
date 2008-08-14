@@ -110,6 +110,10 @@ void handle_fire( int fire_relay, int purge_relay, int purge_timer,
     } else if( !cur_val && old_val ) {
       relay_off( fire_relay );
       purge_timers[purge_timer] = purge_adc_val >> 2;
+      if( purge_timers[purge_timer] < 2 ) {
+	purge_timers[purge_timer] = 2;
+      }
+      print_hex_byte( purge_timers[purge_timer] );
       relay_on( purge_relay );
     }
   } else if( purge_timers[purge_timer] == 1 ) {
@@ -195,6 +199,7 @@ void handle_pods(void)
   cur_c = ~PINC;
   cur_d = ~PIND;
 
+#if 0
   handle_axis( 0, 1, cur_b & _BV(POD1L), old_b & _BV(POD1L),
 	       cur_b & _BV(POD1R), old_b & _BV(POD1R) );
   handle_axis( 2, 3, cur_b & _BV(POD1U), old_b & _BV(POD1U),
@@ -208,6 +213,8 @@ void handle_pods(void)
 	       cur_c & _BV(POD2D), old_c & _BV(POD2D) );
   handle_fire( 12, 13, 1,
 	       cur_b & _BV(POD2FIRE), old_b & _BV(POD2FIRE) );
+
+#endif
 
   handle_axis( 16, 17, cur_c & _BV(POD3L), old_c & _BV(POD3L),
 	       cur_c & _BV(POD3R), old_c & _BV(POD3R) );
