@@ -19,7 +19,7 @@
 
 
 unsigned int relay_timers[6];
-unsigned int purge_timers[3];
+unsigned int purge_timers[4];
 
 void initialize(void)
 {
@@ -195,22 +195,26 @@ void handle_pods(void)
   cur_c = ~PINC;
   cur_d = ~PIND;
 
-  //  handle_axis( 0, 1, 
-  //	       cur_b & POD1L, old_b & POD1L,
-  //	       cur_b & POD1R, old_b & POD1R );
-  //  handle_axis( 2, 3, 
-  //	       cur_b & POD1U, old_b & POD1U,
-  //	       cur_b & POD1D, old_b & POD1D );
-  //  handle_fire( 4, 5, 0,
-  //	       cur_b & POD1FIRE, old_b & POD1FIRE );
-
-     
-  handle_axis( 0, 1, cur_c & _BV(POD3L), old_c & _BV(POD3L),
-	       cur_c & _BV(POD3R), old_c & _BV(POD3R) );
-  handle_axis( 2, 3, cur_c & _BV(POD3U), old_c & _BV(POD3U),
-	       cur_c & _BV(POD3D), old_c & _BV(POD3D) );
+  handle_axis( 0, 1, cur_b & _BV(POD1L), old_b & _BV(POD1L),
+	       cur_b & _BV(POD1R), old_b & _BV(POD1R) );
+  handle_axis( 2, 3, cur_b & _BV(POD1U), old_b & _BV(POD1U),
+	       cur_b & _BV(POD1D), old_b & _BV(POD1D) );
   handle_fire( 4, 5, 0,
-	       cur_b & _BV(POD3FIRE), old_b & _BV(POD1FIRE) );
+	       cur_b & _BV(POD1FIRE), old_b & _BV(POD1FIRE) );
+
+  handle_axis( 8, 9, cur_b & _BV(POD2L), old_b & _BV(POD2L),
+	       cur_b & _BV(POD2R), old_b & _BV(POD2R) );
+  handle_axis( 10, 11, cur_c & _BV(POD2U), old_c & _BV(POD2U),
+	       cur_c & _BV(POD2D), old_c & _BV(POD2D) );
+  handle_fire( 12, 13, 1,
+	       cur_b & _BV(POD2FIRE), old_b & _BV(POD2FIRE) );
+
+  handle_axis( 16, 17, cur_c & _BV(POD3L), old_c & _BV(POD3L),
+	       cur_c & _BV(POD3R), old_c & _BV(POD3R) );
+  handle_axis( 18, 19, cur_c & _BV(POD3U), old_c & _BV(POD3U),
+	       cur_c & _BV(POD3D), old_c & _BV(POD3D) );
+  handle_fire( 20, 21, 2,
+	       cur_c & _BV(POD3FIRE), old_c & _BV(POD1FIRE) );
 
   old_b = cur_b;
   old_c = cur_c;
