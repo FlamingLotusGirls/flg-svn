@@ -113,7 +113,6 @@ void handle_fire( int fire_relay, int purge_relay, int purge_timer,
       if( purge_timers[purge_timer] < 2 ) {
 	purge_timers[purge_timer] = 2;
       }
-      print_hex_byte( purge_timers[purge_timer] );
       relay_on( purge_relay );
     }
   } else if( purge_timers[purge_timer] == 1 ) {
@@ -143,10 +142,13 @@ void handle_axis( int enable_relay, int dir_relay,
 
 void spew_mode(int mode)
 {
-   uart_putchar(int2hex(PINC >> 4));
-   uart_putchar(int2hex(PINC & 0xf));
-   uart_putchar('\n');
-   uart_putchar('\r');
+  uart_putchar(int2hex(PINB >> 4));
+  uart_putchar(int2hex(PINB & 0xf));
+  uart_putchar(' ');
+  uart_putchar(int2hex(PINC >> 4));
+  uart_putchar(int2hex(PINC & 0xf));
+  uart_putchar('\n');
+  uart_putchar('\r');
 }
 
 
@@ -199,7 +201,6 @@ void handle_pods(void)
   cur_c = ~PINC;
   cur_d = ~PIND;
 
-#if 0
   handle_axis( 0, 1, cur_b & _BV(POD1L), old_b & _BV(POD1L),
 	       cur_b & _BV(POD1R), old_b & _BV(POD1R) );
   handle_axis( 2, 3, cur_b & _BV(POD1U), old_b & _BV(POD1U),
@@ -212,9 +213,7 @@ void handle_pods(void)
   handle_axis( 10, 11, cur_c & _BV(POD2U), old_c & _BV(POD2U),
 	       cur_c & _BV(POD2D), old_c & _BV(POD2D) );
   handle_fire( 12, 13, 1,
-	       cur_b & _BV(POD2FIRE), old_b & _BV(POD2FIRE) );
-
-#endif
+	       cur_c & _BV(POD2FIRE), old_c & _BV(POD2FIRE) );
 
   handle_axis( 16, 17, cur_c & _BV(POD3L), old_c & _BV(POD3L),
 	       cur_c & _BV(POD3R), old_c & _BV(POD3R) );
@@ -250,7 +249,7 @@ int main(void)
      timeout_relays();
      mode = 2;//read_mode_switch();
 
-      //spew_mode(mode);
+     //spew_mode(mode);
       
       switch(mode) {
 

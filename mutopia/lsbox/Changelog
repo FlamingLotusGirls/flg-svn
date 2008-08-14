@@ -1,3 +1,7 @@
+2008-08-14 erik gilling <konkers@konkers.net>
+	* get other two joy sticks working
+	* setup toggle switches on portA
+
 2008-08-13 erik gilling <konkers@konkers.net>
 	* set purge time min to 2
 	* comment out pods 1 and 2 for now

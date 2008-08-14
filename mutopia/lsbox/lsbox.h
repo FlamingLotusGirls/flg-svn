@@ -28,24 +28,24 @@
 
 
 /* Port B */
-#define   POD1L           PB0
-#define   POD1R           PB1
-#define   POD1U           PB2
-#define   POD1D           PB3
+#define   POD1R           PB0
+#define   POD1L           PB1
+#define   POD1D           PB2
+#define   POD1U           PB3
 #define   POD1FIRE        PB4
-#define   POD1PURGE       PB5
+#define   POD2PURGE       PB5
 #define   POD2L           PB6
 #define   POD2R           PB7
 
 
 /* Port C */
-#define   POD3L           PC0
-#define   POD3R           PC1
-#define   POD3U           PC2
-#define   POD3D           PC3
+#define   POD3R           PC0
+#define   POD3L           PC1
+#define   POD3D          PC2
+#define   POD3U           PC3
 #define   POD3FIRE        PC4
-#define   POD2U           PC5
-#define   POD2D           PC6
+#define   POD2D           PC5
+#define   POD2U           PC6
 #define   POD2FIRE        PC7
 
 

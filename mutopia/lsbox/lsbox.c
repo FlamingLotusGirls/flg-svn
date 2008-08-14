@@ -28,6 +28,7 @@ void lsbox_ioport_init(void)
 {
   /* Do something (?) to initialize port A */
 
+  PORTA = 0xE0;  /* pull up pins 5-7 on port A */
 
   /* Port B is all inputs */
   /* 5,6 and 7 are ISP header, but with no switches activated,
