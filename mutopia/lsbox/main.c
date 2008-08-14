@@ -18,7 +18,7 @@
 #include "relay_map.h"
 
 
-unsigned int relay_timers[6];
+unsigned int relay_timers[NUM_RELAYS];
 unsigned int purge_timers[4];
 
 void initialize(void)

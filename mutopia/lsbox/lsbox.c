@@ -17,7 +17,7 @@
 static int adc_channel;
 static unsigned int ticks;
 
-extern unsigned int relay_timers[6];
+extern unsigned int relay_timers[NUM_RELAYS];
 extern unsigned int purge_timers[3];
 
 uint16_t purge_adc_val;
