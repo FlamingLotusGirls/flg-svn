@@ -25,7 +25,9 @@
 /* Port A */
 #define   PURGE_TIME_POT  PA0
 #define   DUMP_TIME_POT   PA1
-
+#define   SW0             PA5
+#define   SW1             PA6
+#define   SW2             PA7
 
 /* Port B */
 #define   POD1R           PB0

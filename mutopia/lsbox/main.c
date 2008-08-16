@@ -100,7 +100,8 @@ void handle_relay( int relay, int cur_val, int old_val )
  *           to keep acking the relay and keep a secondary counter.
  */
 
-void handle_fire( int fire_relay, int purge_relay, int purge_timer,
+void handle_fire( int fire_relay, int purge_relay, 
+		  int purge_timer, uint8_t purge_delay,
 		  int cur_val, int old_val )
 {
   /* we want to make sure not to re-trigger while purging */
@@ -109,7 +110,7 @@ void handle_fire( int fire_relay, int purge_relay, int purge_timer,
       relay_on( fire_relay );
     } else if( !cur_val && old_val ) {
       relay_off( fire_relay );
-      purge_timers[purge_timer] = purge_adc_val >> 2;
+      purge_timers[purge_timer] = purge_delay;
       if( purge_timers[purge_timer] < 2 ) {
 	purge_timers[purge_timer] = 2;
       }
@@ -142,11 +143,14 @@ void handle_axis( int enable_relay, int dir_relay,
 
 void spew_mode(int mode)
 {
-  uart_putchar(int2hex(PINB >> 4));
-  uart_putchar(int2hex(PINB & 0xf));
+  print_hex(PINA);
   uart_putchar(' ');
-  uart_putchar(int2hex(PINC >> 4));
-  uart_putchar(int2hex(PINC & 0xf));
+  print_hex(PINB);
+  uart_putchar(' ');
+  print_hex(PINC);
+  uart_putchar(' ');
+  print_hex(PIND);
+  uart_putchar(' ');
   uart_putchar('\n');
   uart_putchar('\r');
 }
@@ -186,10 +190,12 @@ void test_uart_and_packet(void)
 
 /* The following for handle_pod1() */
 
+unsigned int cur_a;
 unsigned int cur_b;
 unsigned int cur_c;
 unsigned int cur_d;
 
+unsigned int old_a;
 unsigned int old_b;
 unsigned int old_c;
 unsigned int old_d;
@@ -197,31 +203,51 @@ unsigned int old_d;
 
 void handle_pods(void)
 {
+  cur_a = ~PINA;
   cur_b = ~PINB;
   cur_c = ~PINC;
   cur_d = ~PIND;
 
+  /*
+   * Pod 1
+   */
   handle_axis( 0, 1, cur_b & _BV(POD1L), old_b & _BV(POD1L),
 	       cur_b & _BV(POD1R), old_b & _BV(POD1R) );
   handle_axis( 2, 3, cur_b & _BV(POD1U), old_b & _BV(POD1U),
 	       cur_b & _BV(POD1D), old_b & _BV(POD1D) );
-  handle_fire( 4, 5, 0,
+  handle_fire( 4, 5, 0, purge_adc_val >> 2,
 	       cur_b & _BV(POD1FIRE), old_b & _BV(POD1FIRE) );
 
+  /*
+   * Pod 2
+   */
   handle_axis( 8, 9, cur_b & _BV(POD2L), old_b & _BV(POD2L),
 	       cur_b & _BV(POD2R), old_b & _BV(POD2R) );
   handle_axis( 10, 11, cur_c & _BV(POD2U), old_c & _BV(POD2U),
 	       cur_c & _BV(POD2D), old_c & _BV(POD2D) );
-  handle_fire( 12, 13, 1,
+  handle_fire( 12, 13, 1, purge_adc_val >> 2,
 	       cur_c & _BV(POD2FIRE), old_c & _BV(POD2FIRE) );
 
+  /*
+   * Pod 3
+   */
   handle_axis( 16, 17, cur_c & _BV(POD3L), old_c & _BV(POD3L),
 	       cur_c & _BV(POD3R), old_c & _BV(POD3R) );
   handle_axis( 18, 19, cur_c & _BV(POD3U), old_c & _BV(POD3U),
 	       cur_c & _BV(POD3D), old_c & _BV(POD3D) );
-  handle_fire( 20, 21, 2,
-	       cur_c & _BV(POD3FIRE), old_c & _BV(POD1FIRE) );
+  handle_fire( 20, 21, 2, purge_adc_val >> 2,
+	       cur_c & _BV(POD3FIRE), old_c & _BV(POD3FIRE) );
 
+
+  /* 
+   * Fuel Depot
+   */
+  handle_fire( 24, 25, 3, dump_adc_val >> 2,
+	       cur_a & _BV(SW0), old_a & _BV(SW0) );
+  handle_relay( 26, cur_a & _BV(SW1), old_a & _BV(SW1) );
+  
+  
+  old_a = cur_a;
   old_b = cur_b;
   old_c = cur_c;
   old_d = cur_d;
@@ -235,6 +261,7 @@ int main(void)
 
    /* The following for handle_pod1() */
 
+   old_a = ~PINA;
    old_b = ~PINB;
    old_c = ~PINC;
    old_d = ~PIND;

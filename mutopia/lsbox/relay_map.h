@@ -3,7 +3,7 @@
 
 #include <avr/pgmspace.h>
 
-#define NUM_RELAYS 24
+#define NUM_RELAYS 27
 
 extern prog_uint8_t relay_data[];
 

@@ -164,7 +164,7 @@ ISR( TIMER0_COMP_vect )
 
   ticks++;
 
-  if( (ticks & 0x3f) == 0 ) {
+  if( (ticks & 0x07) == 0 ) {
     for( i=0 ; i<(sizeof(purge_timers)/sizeof(*purge_timers)) ; i++ ) {
       if( purge_timers[i] > 1 ) {
 	purge_timers[i]--;
@@ -188,7 +188,7 @@ ISR( ADC_vect )
       break;
 
     case 1:
-      dump_adc_val = ADC;
+      dump_adc_val = 0x3ff -ADC;
       adc_channel = 0;
       break;
   }

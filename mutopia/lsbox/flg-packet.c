@@ -50,6 +50,12 @@ char int2hex(int value)
   }
 }
 
+void print_hex( uint8_t value )
+{
+  uart_putchar(int2hex(value >> 4));
+  uart_putchar(int2hex(value & 0xf));
+}
+
 void packet_send_test( void )
 {
 
