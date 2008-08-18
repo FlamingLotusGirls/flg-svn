@@ -1,33 +1,32 @@
 image_version: P0S3-07-3-00
 
 #
-# Sip Config for Extension: pod5
+# Sip Config for Extension: 7
 #
-# hostname SIP0013C46040C3
+# hostname SIP000AB7C6A6FF
 #
 
  # Line 1 Setup
-line1_name: "pod5"
-line1_authname: "pod5"
-line1_shortname: "5"
+line1_name: "pod7"
+line1_authname: "pod7"
+line1_shortname: "7"
 line1_password: "mutopia"
-line1_displayname: "Mutopian spare";
+line1_displayname: "Mutopian pod 7";
 dial_template: DIALPLAN
 
  # Line 2 Setup
-line2_name: "pod5-2"
-line2_authname: "pod5-2"
-line2_shortname: "5-2"
+line2_name: "pod7-2"
+line2_authname: "pod7-2"
+line2_shortname: "72"
 line2_password: "mutopia"
-line2_displayname: "Mutopian pod 5 line 2";
+line2_displayname: "Mutopian pod 7 line 2";
 dial_template: DIALPLAN
-
 
 # Phone Password (Password to be used for console or telnet login)
 phone_password: "cisco" ; Limited to 31 characters (Default - cisco)
 
 # User classifcation used when Registering [ none(default), phone, ip ]
 user_info: none
-logo_url: "http://10.1.1.1/Swirls-mutopia.bmp" 
 
+logo_url: "http://10.1.1.1/Swirls-mutopia.bmp" 
 telnet_level: 2

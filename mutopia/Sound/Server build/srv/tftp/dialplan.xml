@@ -1,0 +1,5 @@
+<DIALTEMPLATE>
+	 <TEMPLATE MATCH="..."    Route="Default" Timeout="0"/> <!--  -->
+	 <TEMPLATE MATCH="*"      Route="Default"    Timeout="1"/> <!--  -->
+
+</DIALTEMPLATE>

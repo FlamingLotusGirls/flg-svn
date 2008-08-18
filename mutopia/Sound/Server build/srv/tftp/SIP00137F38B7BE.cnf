@@ -1,25 +1,24 @@
 image_version: P0S3-07-3-00
 
 #
-# Sip Config for Extension: pod5
-#
-# hostname SIP0013C46040C3
+# Sip Config for Extension: 9
+# Hostname SIP00137F38B7BE
 #
 
  # Line 1 Setup
-line1_name: "pod5"
-line1_authname: "pod5"
-line1_shortname: "5"
+line1_name: "pod9"
+line1_authname: "pod9"
+line1_shortname: "9"
 line1_password: "mutopia"
-line1_displayname: "Mutopian spare";
+line1_displayname: "Mutopian pod 9";
 dial_template: DIALPLAN
 
  # Line 2 Setup
-line2_name: "pod5-2"
-line2_authname: "pod5-2"
-line2_shortname: "5-2"
+line2_name: "pod9-2"
+line2_authname: "pod9-2"
+line2_shortname: "92"
 line2_password: "mutopia"
-line2_displayname: "Mutopian pod 5 line 2";
+line2_displayname: "Mutopian pod 9 line 2";
 dial_template: DIALPLAN
 
 
