@@ -1,0 +1,38 @@
+' ******************************************************************************
+' swxJRNL.swj - journal recorded on 06/01/05 by pradosm
+' *****************************************************************************
+Dim swApp As Object
+Dim Part As Object
+Dim boolstatus As Boolean
+Dim longstatus As Long
+Dim Annotation As Object
+Dim Gtol As Object
+Dim DatumTag As Object
+Dim FeatureData As Object
+Dim Feature As Object
+Dim Component As Object
+Sub main()
+
+Set swApp = Application.SldWorks
+
+Set Part = swApp.OpenDoc4 ("C:\art\flg\wings\v3\E_innersheet.SLDPRT", 1, 0, "", longstatus)
+Set Part = swApp.ActivateDoc ("E_innersheet.SLDPRT")
+swApp.ActiveDoc.ActiveView.FrameLeft = 0
+swApp.ActiveDoc.ActiveView.FrameTop = 0
+swApp.ActiveDoc.ActiveView.FrameState = 1
+swApp.ActiveDoc.ActiveView.FrameState = 1
+Set Part = Nothing
+swApp.CloseDoc "E_innersheet.SLDPRT"
+Set Part = swApp.OpenDoc4 ("C:\art\flg\wings\v3\A_feather.SLDDRW", 3, 0, "", longstatus)
+Set Part = swApp.ActivateDoc ("A_feather - Sheet1")
+swApp.ActiveDoc.ActiveView.FrameLeft = 0
+swApp.ActiveDoc.ActiveView.FrameTop = 0
+swApp.ActiveDoc.ActiveView.FrameState = 1
+swApp.ActiveDoc.ActiveView.FrameState = 1
+Part.EditSketch
+Part.PrintDirect
+Part.SaveAs2 "C:\art\flg\wings\v3\A_feather.DXF", 0, TRUE, FALSE
+Part.EditSketch
+swApp.ActiveDoc.ActiveView.FrameState = 1
+swApp.ExitApp
+End Sub

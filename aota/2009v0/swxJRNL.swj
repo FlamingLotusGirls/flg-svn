@@ -1,0 +1,29 @@
+' ******************************************************************************
+' swxJRNL.swj - journal recorded on 07/22/05 by pradosm
+' *****************************************************************************
+Dim swApp As Object
+Dim Part As Object
+Dim boolstatus As Boolean
+Dim longstatus As Long
+Dim Annotation As Object
+Dim Gtol As Object
+Dim DatumTag As Object
+Dim FeatureData As Object
+Dim Feature As Object
+Dim Component As Object
+Sub main()
+
+Set swApp = Application.SldWorks
+
+Set Part = swApp.OpenDoc4 ("C:\art\flg\wings\v3\A_feather.SLDDRW", 3, 0, "", longstatus)
+Set Part = swApp.ActivateDoc ("A_feather - Sheet1")
+swApp.ActiveDoc.ActiveView.FrameLeft = 0
+swApp.ActiveDoc.ActiveView.FrameTop = 0
+swApp.ActiveDoc.ActiveView.FrameState = 1
+swApp.ActiveDoc.ActiveView.FrameState = 1
+swApp.ActiveDoc.ActiveView.FrameState = 1
+Part.EditSketch
+Part.EditSketch
+swApp.ActiveDoc.ActiveView.FrameState = 1
+swApp.ExitApp
+End Sub
