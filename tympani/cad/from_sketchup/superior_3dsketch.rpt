@@ -1,0 +1,61 @@
+*****************************************************************
+      SolidWorks Corporation - IGES Processor Status Report
+*****************************************************************
+=================================================================
+General Information
+=================================================================
+Sending System Product I.D.  : superior_3dsketch.sldprt
+Receiving System Product I.D.: superior_3dsketch.sldprt
+File Name                    : C:\Users\michael\flg\tympani\cad\from_sketchup\superior_3dsketch.IGS
+Sending System               : SolidWorks 2011
+Preprocessor Version         : SolidWorks 2011
+File Creation Date           : 110410.015539
+Model Creation Date          : 110410.015539
+Units                        : IN
+Model Space Scale            : 1
+Author                       : michael
+Organization                 : 
+
+
+=================================================================
+Entity Processing Information
+=================================================================
+
+
+=================================================================
+Precision analysis of IGES file:
+=================================================================
+  Most prevalent number of significant digits:              12
+  Highest number of significant digits:                     12
+  Average number of significant digits:                11.5973
+  Maximum distance to origin:                          611.841
+  Minimum distance to origin:                          1.75464
+  Effective number of significant digits:              11.9975
+
+
+=================================================================
+Entity Summary
+=================================================================
+-----------------------------------------------------------------
+Type Name                                         Count Converted
+---- ----                                         ----- ---------
+110  Line                                           348       348
+116  Point                                            1         1
+124  Transformation matrix                            1         1
+314  Color definition                                 1         1
+402  Associativity instance                           1         1
+_________________________________________________________________
+
+
+=================================================================
+Result Summary
+=================================================================
+SolidWorks Feature Type                Count
+-----------------------                -----
+Solid feature(s)                       0
+Surface feature(s)                     0
+Curve/Sketch feature(s)                349
+--------------------------------------------
+Start time: Sunday, April 10, 2011 01:56:02
+Finish time: Sunday, April 10, 2011 01:56:11
+Processing time: 0 days, 00 hours, 00 mins, 09 secs
