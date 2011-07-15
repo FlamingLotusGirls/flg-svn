@@ -1,7 +1,7 @@
 
-int oPurge = 2;
-int oLiq = 3;
-int iShoot = 9;
+int oPurge = 7;
+int oLiq = 8;
+int iShoot = 2;
 int iDelayPot = 5;
 
 #define MINPURGE 500
