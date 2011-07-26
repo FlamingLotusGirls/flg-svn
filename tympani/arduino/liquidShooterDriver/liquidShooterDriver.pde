@@ -15,6 +15,10 @@ void setup (){
   pinMode(iShoot, INPUT);
   pinMode(oPurge, OUTPUT);
   pinMode(oLiq, OUTPUT);
+  pinMode(3, HIGH);
+  pinMode(4, HIGH);
+  pinMode(5, HIGH);
+  pinMode(6, HIGH);  
   digitalWrite(oPurge, LOW);
   digitalWrite(oLiq, LOW);
 }
@@ -23,7 +27,7 @@ void loop(){
   if (digitalRead(iShoot) && (millis() > debounceTime)) {
     digitalWrite(oLiq, HIGH);
     debounceTime = millis() + DEBOUNCEDELAY;
-    delayTime = ((analogRead(iDelayPot) * (MAXPURGE - MINPURGE)) / 1023) + MINPURGE;
+    delayTime = map(analogRead(iDelayPot), 0, 1023, MINPURGE, MAXPURGE) ;
     doShooter();
   }
 }

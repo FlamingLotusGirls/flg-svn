@@ -119,9 +119,9 @@ void doWetOn (){// do the wet start cycle
         }
       }
     }
-    if (millis() > nextLedEventTime) {// time to turn the led on or off?
+    if (currentTime > nextLedEventTime) {// time to turn the led on or off?
       secondsLeft = (estEndTime - currentTime) / 1000 + COUNTDOWNINTERVAL;
-      blinkLED (secondsLeft/COUNTDOWNINTERVAL );
+      blinkLED (secondsLeft / COUNTDOWNINTERVAL);
     }
   }
   if (okToRun){
