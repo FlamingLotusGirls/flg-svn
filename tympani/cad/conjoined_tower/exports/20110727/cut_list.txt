@@ -1,0 +1,17 @@
+Cut List:
+
+a1 2x
+a2 1x
+a3 1x
+
+b1 2x
+b2 1x
+b3 1x
+
+c1 2x
+c2 1x
+c3 1x
+
+d1 4x
+d2 2x
+d3 2x
