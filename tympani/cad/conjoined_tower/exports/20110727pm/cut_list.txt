@@ -1,0 +1,18 @@
+Cut List e-h:
+
+e1 2x
+e2 1x
+e3 1x
+
+f1 2x
+f2 1x
+f3 1x
+
+g1 2x
+g2 1x
+g3 1x
+
+h1 2x
+h2 1x
+h3 1x
+
