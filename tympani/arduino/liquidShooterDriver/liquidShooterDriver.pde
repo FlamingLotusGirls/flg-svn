@@ -1,45 +1,118 @@
 
 int oPurge = 7;
 int oLiq = 8;
+int oHorn = 9;
 int iShoot = 2;
+int iFountain = 3;
+int iHorn = 4;
 int iDelayPot = 5;
 
-#define MINPURGE 500
-#define MAXPURGE 2500
+#define MINFOUNTPURGE 500
+#define MAXFOUNTPURGE 6000
+#define MINSHOOTPURGE 500
+#define MAXSHOOTPURGE 3000
 #define DEBOUNCEDELAY 50
 
-unsigned long debounceTime = 0;
-long delayTime;
+unsigned long deBounceTimeOut[4];
+unsigned long purgeOffTime = 0;
+
+int liqState = LOW;
+int purgeState = LOW;
+int mode = 0;
+int deBounceWait[4];
+int lastState[4];
 
 void setup (){
   pinMode(iShoot, INPUT);
+  pinMode(iFountain, INPUT);
+  pinMode(iHorn, INPUT);  
   pinMode(oPurge, OUTPUT);
   pinMode(oLiq, OUTPUT);
-  pinMode(3, HIGH);
-  pinMode(4, HIGH);
-  pinMode(5, HIGH);
-  pinMode(6, HIGH);  
+  pinMode(oHorn, OUTPUT);
   digitalWrite(oPurge, LOW);
   digitalWrite(oLiq, LOW);
+  for (int i=0; i<4; i++){
+    deBounceTimeOut[i] = 0;
+    deBounceWait[i] = false;
+    lastState[i] = LOW;
+  }
 }
 
 void loop(){
-  if (digitalRead(iShoot) && (millis() > debounceTime)) {
-    digitalWrite(oLiq, HIGH);
-    debounceTime = millis() + DEBOUNCEDELAY;
-    delayTime = map(analogRead(iDelayPot), 0, 1023, MINPURGE, MAXPURGE) ;
-    doShooter();
+  switch(mode){
+    case 0: //nothing happening
+      liqState = LOW;
+      purgeState = LOW;
+      if (isPressed(iFountain)){
+        mode = 1;
+      }
+      if (isPressed(iShoot)){
+        mode = 2;
+      }
+      break;  
+    case 1: //fountain
+      liqState = HIGH;
+      purgeState = LOW;
+      if (!isPressed(iFountain)){
+        if (analogRead(iDelayPot) >= 50){    
+          purgeOffTime = millis() + map(analogRead(iDelayPot), 50, 1023, MINFOUNTPURGE, MAXFOUNTPURGE);
+          mode = 3;
+        }
+        else {
+          mode = 0;
+        }
+      }
+      break;
+    case 2: //liquid shooter
+      liqState = HIGH;
+      purgeState = LOW;
+      if (!isPressed(iShoot)){
+        if (analogRead(iDelayPot) >= 50){
+          purgeOffTime = millis() + map(analogRead(iDelayPot), 50, 1023, MINSHOOTPURGE, MAXSHOOTPURGE);
+          mode = 3;
+        }
+        else {
+          mode = 0;
+        }
+      }
+      break;
+    case 3: // purge
+      liqState = LOW;
+      purgeState = HIGH;
+      if (millis() > purgeOffTime){
+        mode = 0;
+      }  
+      break;
   }
+  digitalWrite (oPurge, purgeState);
+  digitalWrite (oLiq, liqState);
+  if (digitalRead(iHorn)){
+    digitalWrite (oHorn, HIGH);
+  }
+  else {
+    digitalWrite (oHorn, LOW);
+  }    
 }
 
-void doShooter(){
-  while (digitalRead(iShoot) || (millis() < debounceTime)) {
+int isPressed (int input){
+  int currentState = digitalRead(input);
+  if (deBounceWait[input]){
+    if (currentState == lastState[input]){
+      deBounceWait[input] = false;
+    }
+    else if (millis() > deBounceTimeOut[input]){
+      deBounceWait[input] = false;
+      lastState[input] = currentState;
+    }
   }
-  digitalWrite(oLiq, LOW);
-  digitalWrite(oPurge, HIGH);
-  delay (delayTime);
-  digitalWrite(oPurge, LOW);  
+  else if (currentState != lastState[input]){
+    deBounceWait[input] = true;
+    deBounceTimeOut[input] = millis() + DEBOUNCEDELAY;
+  }
+  return lastState[input];
 }
+  
+
 
   
   
