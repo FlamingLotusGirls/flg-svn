@@ -1,8 +1,8 @@
-int oRelays[4] = {7, 8, 9, 10};
+int oRelays[4] = {7, 8, 9, 10}; //relay outputs
 
-int iAllSeq = 2;
-int iSeq [2] = {3, 4};
-int iDelayPot = 5;
+int iAllSeq = 2; //input for all at once sequence
+int iSeq [2] = {3, 4}; //inputs for other sequences
+int iDelayPot = 5; // analog input for timing pontentiometer
 
 int sequence = 0;
 int i;
@@ -12,7 +12,7 @@ int sequenceCounter = 0;
 unsigned long nextEventTime = 0;
 
 
-int sequences [2][4] = {{0, 1, 2, 3} , {0, 2, 1, 3}};// variable for storing the different relay sequences
+int sequences [2][4] = {{0, 1, 2, 3} , {0, 2, 1, 3}};// variable for storing the different relay sequence orders
 #define DUTYON 100 //duty on time in milliseconds
 #define MINDUTYOFF 200 //min duty off time in milliseconds
 #define MAXDUTYOFF 2500 //max duty off time in milliseconds
