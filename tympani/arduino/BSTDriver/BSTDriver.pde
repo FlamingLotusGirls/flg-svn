@@ -12,7 +12,7 @@ int sequenceCounter = 0;
 unsigned long nextEventTime = 0;
 
 
-int sequences [2][4] = {{0, 1, 2, 3} , {0, 2, 1, 3}};// variable for storing the different relay sequence orders
+int sequences [2][4] = {{0, 1, 2, 3} , {0, 2, 1, 3}};// variable for storing the different relay sequence order
 #define DUTYON 100 //duty on time in milliseconds
 #define MINDUTYOFF 200 //min duty off time in milliseconds
 #define MAXDUTYOFF 2500 //max duty off time in milliseconds
@@ -51,9 +51,10 @@ void loop(){
           sequence = 1;
         }
         relayState[sequences[sequence][sequenceCounter]] = HIGH;
-        sequenceCounter = sequenceCounter > 3?0:sequenceCounter ++;
-        nextEventTime = millis() + DUTYON;
+        sequenceCounter = sequenceCounter >= 3?0:sequenceCounter + 1;
+
       }
+      nextEventTime = millis() + DUTYON;
       onCycle = true;
     }
   }
