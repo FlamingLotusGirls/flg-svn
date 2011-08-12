@@ -1,0 +1,59 @@
+<%= form_for(@sequence) do |f| %>
+  <% if @sequence.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sequence.errors.count, "error") %> prohibited this sequence from being saved:</h2>
+
+      <ul>
+      <% @sequence.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :steps %><br />
+    <%= f.text_field :steps %><br />
+  </div>
+  <div class="field">
+    <%= f.label :step_delay%> (in milliseconds)<br />
+    <%= f.text_field :step_delay %><br />
+  </div>
+
+<table border=1>
+  <tr>
+    <th>
+      poofer position
+    </th>
+    <% (0...@sequence.steps * @sequence.step_delay).step(@sequence.step_delay).each do |i|%>
+      <th>
+        <%= i %>
+      </th>
+    <% end %>
+  </tr>
+  <% @poofers.each do |poofer| %>
+    <tr>
+      <td>
+        board: <%= poofer.board%> relay: <%= poofer.relay%>
+      </td>
+      <% (0...@sequence.steps * @sequence.step_delay).step(@sequence.step_delay).each do |i|%>
+      <td>
+        <%= check_box_tag poofer.id.to_s + "_" + @sequence.id.to_s + "_" + i.to_s, i.to_s, @sequence.firing_at_time(i,poofer) %>
+      </td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+
+<% @sequence.poofers.each do |poofer|%>
+  <%= poofer.relay %><br />
+<%end%>

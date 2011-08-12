@@ -1,0 +1,29 @@
+<%= form_for(@poofer_sequence) do |f| %>
+  <% if @poofer_sequence.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@poofer_sequence.errors.count, "error") %> prohibited this poofer_sequence from being saved:</h2>
+
+      <ul>
+      <% @poofer_sequence.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :poofer_id %><br />
+    <%= f.text_field :poofer_id %>
+  </div>
+  <div class="field">
+    <%= f.label :sequence_id %><br />
+    <%= f.text_field :sequence_id %>
+  </div>
+  <div class="field">
+    <%= f.label :firing_time %><br />
+    <%= f.text_field :firing_time %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

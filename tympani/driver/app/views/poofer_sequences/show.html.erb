@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Poofer:</b>
+  <%= @poofer_sequence.poofer_id %>
+</p>
+
+<p>
+  <b>Sequence:</b>
+  <%= @poofer_sequence.sequence_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_poofer_sequence_path(@poofer_sequence) %> |
+<%= link_to 'Back', poofer_sequences_path %>

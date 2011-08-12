@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Board:</b>
+  <%= @poofer.board %>
+</p>
+
+<p>
+  <b>Relay:</b>
+  <%= @poofer.relay %>
+</p>
+
+
+<%= link_to 'Edit', edit_poofer_path(@poofer) %> |
+<%= link_to 'Back', poofers_path %>
