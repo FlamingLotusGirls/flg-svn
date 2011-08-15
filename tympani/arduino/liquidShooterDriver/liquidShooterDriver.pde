@@ -1,17 +1,20 @@
 
 int oPurge = 7;
 int oLiq = 8;
-int oHorn = 9;
+int oDammitBuffy = 9;
 int iShoot = 2;
 int iFountain = 3;
-int iHorn = 4;
+int iDammitBuffy = 4;
 int iDelayPot = 5;
 
-#define MINFOUNTPURGE 500
-#define MAXFOUNTPURGE 6000
-#define MINSHOOTPURGE 500
-#define MAXSHOOTPURGE 3000
-#define DEBOUNCEDELAY 50
+#define MINFOUNTPURGE 500 //min purge for fountain mode in ms
+#define MAXFOUNTPURGE 6000 //max purge for fountain mode in ms
+
+#define MINSHOOTPURGE 500 //min purge for shooter mode in ms
+#define MAXSHOOTPURGE 3000 //min purge for shooter mode in ms
+
+#define DEBOUNCEDELAY 50 // ms delay in responding to inputs
+#define PURGEOFFTHRESHHOMLD 50 //input of the delay pot reads from 0 to 1023; this is the cutoff below which the purge is off
 
 unsigned long deBounceTimeOut[4];
 unsigned long purgeOffTime = 0;
@@ -25,10 +28,10 @@ int lastState[4];
 void setup (){
   pinMode(iShoot, INPUT);
   pinMode(iFountain, INPUT);
-  pinMode(iHorn, INPUT);  
+  pinMode(iDammitBuffy, INPUT);  
   pinMode(oPurge, OUTPUT);
   pinMode(oLiq, OUTPUT);
-  pinMode(oHorn, OUTPUT);
+  pinMode(oDammitBuffy, OUTPUT);
   digitalWrite(oPurge, LOW);
   digitalWrite(oLiq, LOW);
   for (int i=0; i<4; i++){
@@ -54,8 +57,8 @@ void loop(){
       liqState = HIGH;
       purgeState = LOW;
       if (!isPressed(iFountain)){
-        if (analogRead(iDelayPot) >= 50){    
-          purgeOffTime = millis() + map(analogRead(iDelayPot), 50, 1023, MINFOUNTPURGE, MAXFOUNTPURGE);
+        if (analogRead(iDelayPot) >= PURGEOFFTHRESHHOMLD){    
+          purgeOffTime = millis() + map(analogRead(iDelayPot), PURGEOFFTHRESHHOMLD, 1023, MINFOUNTPURGE, MAXFOUNTPURGE);
           mode = 3;
         }
         else {
@@ -67,8 +70,8 @@ void loop(){
       liqState = HIGH;
       purgeState = LOW;
       if (!isPressed(iShoot)){
-        if (analogRead(iDelayPot) >= 50){
-          purgeOffTime = millis() + map(analogRead(iDelayPot), 50, 1023, MINSHOOTPURGE, MAXSHOOTPURGE);
+        if (analogRead(iDelayPot) >= PURGEOFFTHRESHHOMLD){
+          purgeOffTime = millis() + map(analogRead(iDelayPot), PURGEOFFTHRESHHOMLD, 1023, MINSHOOTPURGE, MAXSHOOTPURGE);
           mode = 3;
         }
         else {
@@ -86,15 +89,15 @@ void loop(){
   }
   digitalWrite (oPurge, purgeState);
   digitalWrite (oLiq, liqState);
-  if (digitalRead(iHorn)){
-    digitalWrite (oHorn, HIGH);
+  if (digitalRead(iDammitBuffy)){
+    digitalWrite (oDammitBuffy, HIGH);
   }
   else {
-    digitalWrite (oHorn, LOW);
+    digitalWrite (oDammitBuffy, LOW);
   }    
 }
 
-int isPressed (int input){
+int isPressed (int input){ // debounces inputs and returns the state of the input after debouncing
   int currentState = digitalRead(input);
   if (deBounceWait[input]){
     if (currentState == lastState[input]){
